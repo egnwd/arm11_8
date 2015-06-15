@@ -5,16 +5,17 @@ str r5, [r4]        ; set pins 02, 03, 04 as OUTPUT
                     ; set pin 09 as INPUT
 
 mov r5, #0x1c       ; bits [2..4] = 1
-
+mov r6, #0          ; count = 0 (lsl 2, to align bits)
 loop:               ; will keep repeating
 
 str r5, [r4, #0x28] ; clear all pins
+str r6, [r4, #0x1c] ; set pins
 
-; call flasher
+; call if_new_obs
 add r14, r15, #8    ; r14 = PC + 8 (just after branch)
 sub r13, r13, #4    ; SP = SP - 4
 str r14, [r13]      ; push return address
-b fn_flasher        ; call flasher
+b fn_if_new_obs
 
 ldr r0, =0xfff000   ; set delay = 0xfff000
 delay:              ; begin delay
@@ -26,13 +27,13 @@ b loop              ; back to loop
 
 andeq r0,r0,r0
 
-fn_flasher:
+fn_if_new_obs:
 
 ldr r1, [r4, #0x34] ; r1 = input bits
 and r1, r1, #0x200  ; only bit 9 (current state)
 cmp r1, #0x200      ; check current state
-bne end             ; if on, set pins
-str r5, [r4, #0x1c] ; set pins
+beq end             ; if off, count
+add r6, r6, #4      ; count++
 end:
 
 ldr r14, [r13]      ; pop return address
