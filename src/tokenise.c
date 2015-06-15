@@ -24,7 +24,7 @@ void tokenise(Program *program, char *sep, void (*tokenFunction)(Program *progra
 
 void tokens_init(Tokens *tokens) {
   tokens->size = 0;
-  tokens->fullCapacity = 100;
+  tokens->fullCapacity = 500;
   tokens->tokens = malloc(sizeof(Token) * tokens->fullCapacity);
 }
 
